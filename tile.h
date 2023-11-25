@@ -1,20 +1,18 @@
 #ifndef TILE_H
 #define TILE_H
 
-#include <vector>
+enum eTile { EMPTY = 0, BODY, HEAD, FRUIT };
 
 class Tile {
-	public:
-		bool hasSnake, hasFood;
+	private:
 		int posX, posY;
-		Tile(const Tile*);
-		Tile();
-		~Tile();
-		void SetPos(int, int);
-		void SetState(bool, bool);
-		std::vector<int> GetPos();
-		std::vector<bool> GetState();
-		void Clear();
+		eTile type;
+	public:
+		Tile(int, int);
+		Tile(int, int, eTile);
+		void SetPosition(int, int);
+		void SetType(eTile);
+		eTile GetType();
 };
 
 #endif

@@ -5,6 +5,7 @@
 
 enum eTile { EMPTY = 0, TAIL, HEAD, FRUIT };
 enum eDir { STOP = 0, UP, DOWN, LEFT, RIGHT };
+enum eState { PLAY = 0, PAUSE, DEATH };
 
 class Field {
 	private:
@@ -12,9 +13,12 @@ class Field {
 		std::vector<std::vector<eTile>> tiles;
 		std::vector<std::vector<int>> tail;
 		eDir direction;
+		eState state;
 	public:
 		int headX, headY;
 		Field(int, int);
+		void Reset();
+		void Setup(int, int);
 		void SetSize(int, int);
 		std::vector<int> GetSize();
 		void SetTile(int, int, eTile);
@@ -26,6 +30,8 @@ class Field {
 		void SetTail(std::vector<std::vector<int>>);
 		std::vector<std::vector<int>> GetTail();
 		void UpdateField();
+		void SetState(eState);
+		eState GetState();
 };
 
 #endif

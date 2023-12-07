@@ -6,6 +6,36 @@
 
 #include "field.h"
 
+void StaleGame(Field* field, int* score) {
+	switch (field->GetState()) {
+		case DEATH:
+		{
+			system("cls");
+			std::cout << "  ________                      ________                     " << std::endl;
+			std::cout << " /  _____/_____    _____   ____ \\_____  \\___  __ ___________ " << std::endl;
+			std::cout << "/   \\  ___\\__  \\  /     \\_/ __ \\ /   |   \\  \\/ // __ \\_  __ \\" << std::endl;
+			std::cout << "\\    \\_\\  \\/ __ \\|  Y Y  \\  ___//    |    \\   /\\  ___/|  | \\/" << std::endl;
+			std::cout << " \\______  (____  /__|_|  /\\___  >_______  /\\_/  \\___  >__|   " << std::endl;
+			std::cout << "        \\/     \\/      \\/     \\/        \\/          \\/       \n\n" << std::endl;
+			std::cout << "Your score: " << *score << "\n\n" << std::endl;
+			system("pause");
+			*score = 0;
+			std::vector<int> size = field->GetSize();
+			field->Reset();
+			field->Setup(size[0], size[1]);
+			break;
+		}
+		case PAUSE:
+			system("cls");
+			std::cout << "__________                             " << std::endl;
+			std::cout << "\\______   \\_____   __ __  ______ ____  " << std::endl;
+			std::cout << " |     ___/\\__  \\ |  |  \\/  ___// __ \\ " << std::endl;
+			std::cout << " |    |     / __ \\|  |  /\\___ \\\\  ___/ " << std::endl;
+			std::cout << " |____|    (____  /____//____  >\\___  >" << std::endl;
+			std::cout << "                \\/           \\/     \\/ \n\n" << std::endl;
+			system("pause");
+	}
+}
 
 void Draw(Field *field, int score) {
 	system("cls");
@@ -48,16 +78,25 @@ void Input(Field *field) {
 	if (_kbhit()) {
 		switch (_getch()) {
 			case 'w':
-				field->SetDirection(UP);
+				if (field->GetDirection() != DOWN)
+					field->SetDirection(UP);
 				break;
 			case 'a':
-				field->SetDirection(LEFT);
+				if (field->GetDirection() != RIGHT)
+					field->SetDirection(LEFT);
 				break;
 			case 's':
-				field->SetDirection(DOWN);
+				if (field->GetDirection() != UP)
+					field->SetDirection(DOWN);
 				break;
 			case 'd':
-				field->SetDirection(RIGHT);
+				if (field->GetDirection() != LEFT)
+					field->SetDirection(RIGHT);
+				break;
+			case 'p':
+				field->SetState(PAUSE);
+				StaleGame(field, 0);
+				field->SetDirection(STOP);
 				break;
 			default:
 				break;
@@ -111,6 +150,17 @@ void Logic(Field *field, int *score) {
 			break;
 	}
 	
+	if (field->headX < 0 || field->headX > 19 ||
+		field->headY < 0 || field->headY > 19) {
+			field->SetState(DEATH);
+			StaleGame(field, score);
+	}
+	
+	if (tiles[field->headX][field->headY] == TAIL) {
+		field->SetState(DEATH);
+		StaleGame(field, score);
+	}
+	
 	field->SetTile(field->headX, field->headY, HEAD);
 	
 	if (tiles[field->headX][field->headY] == FRUIT) {
@@ -123,12 +173,11 @@ void Logic(Field *field, int *score) {
 int main(void) {
 	int height = 20, width = 20;
 	Field field(height, width);
-	bool gameOver = false;
 	int score = 0;
 	
-	while (!gameOver) {
+	while (1) {
 		Draw(&field, score);
-		Input(&field); 
+		Input(&field);
 		Logic(&field, &score);
 		std::cout << field.GetDirection() << std::endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(250));

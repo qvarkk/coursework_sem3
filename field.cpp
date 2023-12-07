@@ -2,6 +2,20 @@
 #include "field.h"
 
 Field::Field(int height, int width) {
+	Setup(height, width);
+}
+
+void Field::Reset() {
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			tiles[i][j] = EMPTY;
+		}
+	}
+	
+	tail.resize(0);
+}
+
+void Field::Setup(int height, int width) {
 	SetSize(height, width);
 	SetDirection(STOP);
 	tiles.resize(height);		
@@ -15,6 +29,9 @@ Field::Field(int height, int width) {
 	
 	AddToTail(width/2 - 1, height/2);
 	AddToTail(width/2 - 2, height/2);
+	AddToTail(width/2 - 3, height/2);
+	
+	UpdateField();
 	
 	SpawnFruit();
 }
@@ -67,9 +84,18 @@ void Field::SetTail(std::vector<std::vector<int>> tail) {
 	this->tail = tail;
 }
 
-void Field::UpdateField() {
+void Field::UpdateField() {	
 	for (int i = 0; i < tail.size(); i++) {
-		tiles[tail[0][0]][tail[0][1]] = TAIL;
+		tiles[tail[i][0]][tail[i][1]] = TAIL;
 	}
+	
 	tiles[tail[tail.size() - 1][0]][tail[tail.size() - 1][1]] = EMPTY;
+}
+
+void Field::SetState(eState state) {
+	this->state = state;
+}
+
+eState Field::GetState() {
+	return state;
 }

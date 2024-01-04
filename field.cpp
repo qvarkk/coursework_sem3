@@ -18,14 +18,14 @@ void Field::Reset() {
 void Field::Setup(int height, int width) {
 	SetSize(height, width);
 	SetDirection(STOP);
-	tiles.resize(height);		
+	tiles.resize(height);
 	for (int i = 0; i < height; i++) {
 		tiles[i].resize(width);
 	}
 	
-	tiles[width/2][height/2] = HEAD;
-	headX = width/2;
-	headY = height/2;
+	tiles[height/2][width/2] = HEAD;
+	headX = height/2;
+	headY = width/2;
 	
 	AddToTail(width/2 - 1, height/2);
 	AddToTail(width/2 - 2, height/2);
@@ -65,14 +65,14 @@ eDir Field::GetDirection() {
 }
 
 void Field::SpawnFruit() {
-	tiles[rand() % width][rand() % height] = FRUIT;
+	tiles[rand() % height][rand() % width] = FRUIT;
 }
 
 void Field::AddToTail(int posX, int posY) {
-	tiles[posX][posY] = TAIL;
+	tiles[posY][posX] = TAIL;
 	std::vector<int> v;
-	v.push_back(posX);
 	v.push_back(posY);
+	v.push_back(posX);
 	tail.push_back(v);
 }
 
